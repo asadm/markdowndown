@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import pReplace from "string-replace-async";
-import fetch from "node-fetch";
 import crypto from "crypto";
 function sha1(str) {
   const hash = crypto.createHash("sha1");
