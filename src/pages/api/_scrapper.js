@@ -1,5 +1,4 @@
 // Import the necessary modules using ES6 import syntax
-import puppeteer from 'puppeteer';
 import { JSDOM } from 'jsdom';
 import { Readability } from '@mozilla/readability';
 import TurndownService from 'turndown';

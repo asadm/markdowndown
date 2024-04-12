@@ -32,6 +32,16 @@ import { useToast } from "@/components/ui/use-toast"
 
 import { useState } from "react"
 
+function getLastPartOfUrl(url){
+  // remove params and hash and trailing slash
+  url = url.replace(/(\?.*)|(#.*)|\/$/, "")
+  const parts = url.split("/")
+  // convert to filename safe string
+  const last = parts[parts.length - 1].replace(/[^a-z0-9]/gi, '_').toLowerCase()
+  return last
+}
+
+
 export function Homepage() {
   const { toast } = useToast()
   const [url, setUrl] = useState("");
@@ -67,7 +77,7 @@ export function Homepage() {
       })
       const a = document.createElement('a');
       a.href = `data:text/plain;charset=utf-8,${encodeURIComponent(md)}`;
-      a.download = 'markdd.md';
+      a.download = `${getLastPartOfUrl(url)}.md` || "markdd.md";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -78,7 +88,7 @@ export function Homepage() {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'markdd.zip';
+      a.download = `${getLastPartOfUrl(url)}.zip` || "markdd.zip";
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
