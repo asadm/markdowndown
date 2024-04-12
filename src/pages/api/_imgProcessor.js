@@ -41,8 +41,9 @@ export async function processMarkdownWithImages(filePath, imgDirName, imagesBase
           }
           return match.replace(url, `./${path.relative(fileDir, destImagePath)}`);
         }
+        let res;
         try{
-          const res = await fetch(url);
+          res = await fetch(url);
         }
         catch(e){
           console.log(e)
