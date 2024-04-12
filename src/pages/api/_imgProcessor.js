@@ -52,11 +52,15 @@ export async function processMarkdownWithImages(filePath, imgDirName, imagesBase
         const contentType = res.headers.get("content-type");
         // const extension = contentType.split("/")[1];
         console.log(`Downloading: ${url} to ${destImagePath}`);
-        const dest = fs.createWriteStream(destImagePath);
-        await res.body.pipe(dest);
-        await new Promise((res, rej) => {
-          dest.on("finish", res);
-        });
+        const buffer = await res.arrayBuffer();
+
+        fs.writeFileSync(destImagePath, Buffer.from(buffer), "binary");
+
+        // const dest = fs.createWriteStream(destImagePath);
+        // await res.body.pipe(dest);
+        // await new Promise((res, rej) => {
+        //   dest.on("finish", res);
+        // });
         if (imagesBasePathOverride){
           return match.replace(url, `${imagesBasePathOverride}${imgName}`)
         }
