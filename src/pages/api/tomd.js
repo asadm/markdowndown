@@ -68,7 +68,7 @@ export default async function handler(req, res) {
   }
 }
 
-// This function can run for a maximum of 5 seconds
+// This function can run for a maximum of 30 seconds
 export const config = {
   maxDuration: 30,
 };
