@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button"
 import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/components/ui/use-toast"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 function getLastPartOfUrl(url){
   // remove params and hash and trailing slash
@@ -50,6 +50,28 @@ export function Homepage() {
   const [imagesBasePathOverride, SetImagesBasePathOverride] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [md, setMd] = useState("");
+
+  function saveSettingsToLocalStorage(){
+    const settings = {
+      url,
+      imagesDir,
+      downloadImages,
+      imagesBasePathOverride
+    }
+    localStorage.setItem("settings", JSON.stringify(settings))
+  }
+
+  useEffect(()=>{
+    const settings = localStorage.getItem("settings");
+    if (settings){
+      const parsed = JSON.parse(settings);
+      setUrl(parsed.url)
+      setImagesDir(parsed.imagesDir)
+      setDownloadImages(!!parsed.downloadImages)
+      SetImagesBasePathOverride(parsed.imagesBasePathOverride)
+    }
+  }, [])
+
   async function submit(){
     if (isLoading){
       return;
@@ -97,6 +119,7 @@ export function Homepage() {
         description: "Your markdown and images are being downloaded as a zip file",
       })
     }
+    saveSettingsToLocalStorage()
     setIsLoading(false)
   }
   return (
