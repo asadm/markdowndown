@@ -28,8 +28,15 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Toaster } from "@/components/ui/toaster"
+import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/components/ui/use-toast"
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+ 
 import { useEffect, useState } from "react"
 
 function getLastPartOfUrl(url){
@@ -42,6 +49,20 @@ function getLastPartOfUrl(url){
 }
 
 
+function HelpTooltip({children}){
+  return (
+    <TooltipProvider delayDuration={10}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button className="ml-2" variant="ghost" size="ghost" ><Badge variant="outline">?</Badge></Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{children}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
+}
 export function Homepage() {
   const { toast } = useToast()
   const [url, setUrl] = useState("");
@@ -153,39 +174,58 @@ export function Homepage() {
             <div className="flex items-center space-x-2">
               <Checkbox id="remove-noncontent" checked={removeNonContent} onClick={t=>setRemoveNonContent(!removeNonContent)} />
               <label className="text-sm leading-none" htmlFor="remove-noncontent">
-                Remove non-content elements
+                Remove non-content elements 
+                <HelpTooltip>
+                  Removes non-content elements like headers, footers, ads etc.
+                </HelpTooltip>
               </label>
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox id="remove-images" checked={downloadImages} onClick={t=>setDownloadImages(!downloadImages)} />
               <label className="text-sm leading-none" htmlFor="remove-images">
                 Download images locally and link them
+                <HelpTooltip>
+                  Instead of linking to remote images, download them locally and link them in the markdown.<br/>
+                  Gives you a zip file with markdown and images folder.
+                </HelpTooltip>
               </label>
             </div>
-            <div className="space-y-2">
+            {downloadImages && (
+              <>
+              <div className="space-y-2">
               <Label className="text-sm leading-none" htmlFor="images-folder">
                 Override Images Folder Name
+                <HelpTooltip>
+                  Override the default folder name for images (Only used when downloading images)
+                </HelpTooltip>
               </Label>
               <Input id="images-folder" placeholder="Enter folder name" type="text" value={imagesDir} onChange={val=>{
                 setImagesDir(val.target.value)
               }} />
-              <div className="space-y-2">
+              
+            </div>
+            <div className="space-y-2">
               <Label className="text-sm leading-none" htmlFor="images-folder">
                 Override base path for images in markdown
+                <HelpTooltip>
+                  Override the base path for linked images in markdown (Only used when downloading images)
+                </HelpTooltip>
               </Label>
               <Input id="images-basepath" placeholder={`./${imagesDir}`} type="text" value={imagesBasePathOverride} onChange={val=>{
                 SetImagesBasePathOverride(val.target.value)
               }} />
               </div>
-            </div>
+              </>
+            )}
+            
           </div>
           
         </div>
-        <footer className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        <footer className="mt-10 text-xs text-gray-500 dark:text-gray-400">
           <p>
-            Made with ❤️ by{" "}
-            <a href="https://asadmemon.com" target="_blank" rel="noopener noreferrer">
-              Asad
+          © {new Date().getFullYear()}&nbsp;
+            <a className="underline" href="https://asadmemon.com" target="_blank" rel="noopener noreferrer">
+              Asad Memon
             </a>
           </p>
         </footer>
