@@ -4,11 +4,13 @@ import { Readability } from '@mozilla/readability';
 import TurndownService from 'turndown';
 import { processMarkdownWithImages } from './_imgProcessor';
 import fs from 'fs';
+import { runGPT } from './_gpt';
 
+const gptModel = 'gpt-3.5-turbo-0125';
 const PUPPETEERREMOTEURL = `https://markdownworker.asadmemon.workers.dev/?url=`;
 
 // Define the function using ES6 arrow function syntax
-const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, imgDirName = "images", imagesBasePathOverride = undefined, removeNonContent = true) => {
+const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, imgDirName = "images", imagesBasePathOverride = undefined, removeNonContent = true, applyGpt="") => {
   try {
     // Launch Puppeteer browser instance
     console.log('Launching Puppeteer browser instance...');
@@ -37,7 +39,16 @@ const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, img
 
     // Convert the main content HTML to Markdown
     const turndownService = new TurndownService();
-    const markdown = turndownService.turndown(removeNonContent?`<h1>${article.title}</h1>${article.content}`:data);
+    let markdown = turndownService.turndown(removeNonContent?`<h1>${article.title}</h1>${article.content}`:data);
+
+    // Apply GPT if requested
+    if (applyGpt){
+      console.log("Applying GPT...");
+      const instructions = applyGpt
+      const gptResponse = await runGPT(gptModel, markdown, instructions);
+      console.log("gpt says", gptResponse);
+      markdown = gptResponse.content || markdown;
+    }
 
     // Close the Puppeteer browser instance
     // await browser.close();

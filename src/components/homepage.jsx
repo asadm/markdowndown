@@ -24,6 +24,7 @@ To read more about using these font, please visit the Next.js documentation:
 - Pages Directory: https://nextjs.org/docs/pages/building-your-application/optimizing/fonts
 **/
 import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -71,6 +72,9 @@ export function Homepage() {
   const [removeNonContent, setRemoveNonContent] = useState(true);
   const [imagesBasePathOverride, SetImagesBasePathOverride] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [gptEnabled, setGptEnabled] = useState(false);
+  const [applyGpt, setApplyGpt] = useState("");
+
   const [md, setMd] = useState("");
 
   function saveSettingsToLocalStorage(){
@@ -79,7 +83,8 @@ export function Homepage() {
       imagesDir,
       downloadImages,
       imagesBasePathOverride,
-      removeNonContent
+      removeNonContent,
+      applyGpt
     }
     localStorage.setItem("settings", JSON.stringify(settings))
   }
@@ -88,7 +93,9 @@ export function Homepage() {
     const settings = localStorage.getItem("settings");
     if (settings){
       const parsed = JSON.parse(settings);
-      setUrl(parsed.url)
+      setUrl(parsed.url || "")
+      setApplyGpt(parsed.applyGpt || "")
+      if (parsed.applyGpt) setGptEnabled(true)
       setRemoveNonContent(!!parsed.removeNonContent)
       setImagesDir(parsed.imagesDir)
       setDownloadImages(!!parsed.downloadImages)
@@ -106,9 +113,25 @@ export function Homepage() {
         description: "Please enter a valid URL",
       })
     }
-    const fullUrl = `/api/tomd?url=${url}&downloadImages=${downloadImages}&imagesDir=${imagesDir}&imagesBasePathOverride=${imagesBasePathOverride}&removeNonContent=${removeNonContent}`
+    // const fullUrl = `/api/tomd?url=${url}&downloadImages=${downloadImages}&imagesDir=${imagesDir}&imagesBasePathOverride=${imagesBasePathOverride}&removeNonContent=${removeNonContent}`
+    const payload = {
+      url,
+      downloadImages,
+      imagesDir,
+      imagesBasePathOverride,
+      removeNonContent,
+      applyGpt
+    }
+
     setIsLoading(true)
-    const resp = await fetch(fullUrl)
+    const resp = await fetch("/api/tomd", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+    // const resp = await fetch(fullUrl)
     if (!resp.ok){
       toast({
         title: "Failed to Convert",
@@ -147,7 +170,7 @@ export function Homepage() {
     setIsLoading(false)
   }
   return (
-    (<main className="w-full h-[100vh] py-6 space-y-6 flex justify-center items-center">
+    (<main className="w-full min-h-[100vh] py-6 space-y-6 flex justify-center items-center">
       <Toaster />
       <div className="container flex flex-col items-center justify-center">
         <div className="space-y-2 text-center mb-10">
@@ -205,7 +228,7 @@ export function Homepage() {
               
             </div>
             <div className="space-y-2">
-              <Label className="text-sm leading-none" htmlFor="images-folder">
+              <Label className="text-sm leading-none" htmlFor="images-basepath">
                 Override base path for images in markdown
                 <HelpTooltip>
                   Override the base path for linked images in markdown (Only used when downloading images)
@@ -217,6 +240,21 @@ export function Homepage() {
               </div>
               </>
             )}
+
+            <div className="space-y-2">
+            <Checkbox id="apply-gpt" checked={gptEnabled} onClick={t=>setGptEnabled(!gptEnabled)} />
+              <Label className="text-sm leading-none ml-2" htmlFor="apply-gpt">
+                Apply GPT Filter on Markdown
+                <HelpTooltip>
+                  Apply custom instructions to further clean up or transform the markdown content using GPT-3.5
+                </HelpTooltip>
+              </Label>
+              {gptEnabled && <Textarea id="apply-gpt-txt" 
+              className="min-h-[20rem]"
+              placeholder={`Instructions for GPT like:\n\n'Add a tldr section at the top'\n'Remove all links'\n'Change all subheadings to h3'`} value={applyGpt} onChange={val=>{ 
+                setApplyGpt(val.target.value)
+              }} />}
+            </div>
             
           </div>
           

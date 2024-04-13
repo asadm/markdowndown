@@ -24,6 +24,7 @@
     "jsdom": "^24.0.0",
     "lucide-react": "^0.368.0",
     "next": "14.2.0",
+    "openai": "^4.33.0",
     "react": "^18",
     "react-dom": "^18",
     "string-replace-async": "^3.0.2",
