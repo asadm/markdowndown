@@ -8,7 +8,7 @@ import fs from 'fs';
 const PUPPETEERREMOTEURL = `https://markdownworker.asadmemon.workers.dev/?url=`;
 
 // Define the function using ES6 arrow function syntax
-const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, imgDirName = "images", imagesBasePathOverride = undefined) => {
+const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, imgDirName = "images", imagesBasePathOverride = undefined, removeNonContent = true) => {
   try {
     // Launch Puppeteer browser instance
     console.log('Launching Puppeteer browser instance...');
@@ -37,7 +37,7 @@ const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, img
 
     // Convert the main content HTML to Markdown
     const turndownService = new TurndownService();
-    const markdown = turndownService.turndown(article.content);
+    const markdown = turndownService.turndown(removeNonContent?`<h1>${article.title}</h1>${article.content}`:data);
 
     // Close the Puppeteer browser instance
     // await browser.close();

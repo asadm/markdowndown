@@ -47,6 +47,7 @@ export function Homepage() {
   const [url, setUrl] = useState("");
   const [imagesDir, setImagesDir] = useState("images");
   const [downloadImages, setDownloadImages] = useState(false);
+  const [removeNonContent, setRemoveNonContent] = useState(true);
   const [imagesBasePathOverride, SetImagesBasePathOverride] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const [md, setMd] = useState("");
@@ -56,7 +57,8 @@ export function Homepage() {
       url,
       imagesDir,
       downloadImages,
-      imagesBasePathOverride
+      imagesBasePathOverride,
+      removeNonContent
     }
     localStorage.setItem("settings", JSON.stringify(settings))
   }
@@ -66,6 +68,7 @@ export function Homepage() {
     if (settings){
       const parsed = JSON.parse(settings);
       setUrl(parsed.url)
+      setRemoveNonContent(!!parsed.removeNonContent)
       setImagesDir(parsed.imagesDir)
       setDownloadImages(!!parsed.downloadImages)
       SetImagesBasePathOverride(parsed.imagesBasePathOverride)
@@ -82,7 +85,7 @@ export function Homepage() {
         description: "Please enter a valid URL",
       })
     }
-    const fullUrl = `/api/tomd?url=${url}&downloadImages=${downloadImages}&imagesDir=${imagesDir}&imagesBasePathOverride=${imagesBasePathOverride}`;
+    const fullUrl = `/api/tomd?url=${url}&downloadImages=${downloadImages}&imagesDir=${imagesDir}&imagesBasePathOverride=${imagesBasePathOverride}&removeNonContent=${removeNonContent}`
     setIsLoading(true)
     const resp = await fetch(fullUrl)
     if (!resp.ok){
@@ -147,6 +150,12 @@ export function Homepage() {
           
           <div className="space-y-2 flex flex-col gap-4">
             <p>Advanced Options</p>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="remove-noncontent" checked={removeNonContent} onClick={t=>setRemoveNonContent(!removeNonContent)} />
+              <label className="text-sm leading-none" htmlFor="remove-noncontent">
+                Remove non-content elements
+              </label>
+            </div>
             <div className="flex items-center space-x-2">
               <Checkbox id="remove-images" checked={downloadImages} onClick={t=>setDownloadImages(!downloadImages)} />
               <label className="text-sm leading-none" htmlFor="remove-images">
