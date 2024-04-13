@@ -248,7 +248,7 @@ export function Homepage() {
                 setApplyGpt("")
               }
               setGptEnabled(newValue);
-              } />
+              }} />
               <Label className="text-sm leading-none ml-2" htmlFor="apply-gpt">
                 Apply GPT Filter on Markdown
                 <HelpTooltip>
