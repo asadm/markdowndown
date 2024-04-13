@@ -42,18 +42,13 @@ const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, img
     let markdown = turndownService.turndown(removeNonContent?`<h1>${article.title}</h1>${article.content}`:data);
 
     // Apply GPT if requested
+    // TODO: move this below image process part
     if (applyGpt){
       console.log("Applying GPT...");
       const instructions = applyGpt
       const gptResponse = await runGPT(gptModel, markdown, instructions);
-      console.log("gpt says", gptResponse);
       markdown = gptResponse.content || markdown;
     }
-
-    // Close the Puppeteer browser instance
-    // await browser.close();
-
-    
     
     fs.writeFileSync(filePath, markdown, 'utf8');
     if (!fetchImages){

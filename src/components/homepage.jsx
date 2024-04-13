@@ -242,7 +242,13 @@ export function Homepage() {
             )}
 
             <div className="space-y-2">
-            <Checkbox id="apply-gpt" checked={gptEnabled} onClick={t=>setGptEnabled(!gptEnabled)} />
+            <Checkbox id="apply-gpt" checked={gptEnabled} onClick={t=>{
+              const newValue = !gptEnabled;
+              if (!newValue){
+                setApplyGpt("")
+              }
+              setGptEnabled(newValue);
+              } />
               <Label className="text-sm leading-none ml-2" htmlFor="apply-gpt">
                 Apply GPT Filter on Markdown
                 <HelpTooltip>
