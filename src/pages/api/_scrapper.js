@@ -5,12 +5,14 @@ import TurndownService from 'turndown';
 import { processMarkdownWithImages } from './_imgProcessor';
 import fs from 'fs';
 import { runGPT } from './_gpt';
+import Showdown from 'showdown';
 
 const gptModel = 'gpt-3.5-turbo-0125';
+const gptModelBig = 'gpt-4-turbo-2024-04-09'
 const PUPPETEERREMOTEURL = `https://markdownworker.asadmemon.workers.dev/?url=`;
 
 // Define the function using ES6 arrow function syntax
-const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, imgDirName = "images", imagesBasePathOverride = undefined, removeNonContent = true, applyGpt="") => {
+const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, imgDirName = "images", imagesBasePathOverride = undefined, removeNonContent = true, applyGpt="", bigModel = false) => {
   try {
     // Launch Puppeteer browser instance
     console.log('Launching Puppeteer browser instance...');
@@ -40,15 +42,6 @@ const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, img
     // Convert the main content HTML to Markdown
     const turndownService = new TurndownService();
     let markdown = turndownService.turndown(removeNonContent?`<h1>${article.title}</h1>${article.content}`:data);
-
-    // Apply GPT if requested
-    // TODO: move this below image process part
-    if (applyGpt){
-      console.log("Applying GPT...");
-      const instructions = applyGpt
-      const gptResponse = await runGPT(gptModel, markdown, instructions);
-      markdown = gptResponse.content || markdown;
-    }
     
     fs.writeFileSync(filePath, markdown, 'utf8');
     if (!fetchImages){
@@ -58,6 +51,21 @@ const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, img
     // move images to local
     console.log("Moving images to local...");
     await processMarkdownWithImages(filePath, imgDirName, imagesBasePathOverride);
+    // Apply GPT if requested
+    if (applyGpt){
+      const curMarkdown = fs.readFileSync(filePath, "utf8");
+      console.log("Applying GPT...");
+      const instructions = applyGpt
+      const gptResponse = await runGPT(bigModel?gptModelBig:gptModel, curMarkdown, instructions);
+      markdown = gptResponse.content || markdown;
+      fs.writeFileSync(filePath, markdown, 'utf8');
+      // fs.writeFileSync(filePath.replace(".md", ".gpt.json"), JSON.stringify(gptResponse.changes), 'utf8');
+    }
+
+    // also save the markdown to html
+    const converter = new Showdown.Converter();
+    const html = converter.makeHtml(markdown);
+    fs.writeFileSync(filePath.replace(".md", ".html"), html, 'utf8');
   } catch (error) {
     console.error(`Error fetching clean markdown from URL: ${error.message}`);
     throw error;

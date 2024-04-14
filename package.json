@@ -2,6 +2,7 @@
   "name": "markdowndown",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -27,6 +28,7 @@
     "openai": "^4.33.0",
     "react": "^18",
     "react-dom": "^18",
+    "showdown": "^2.1.0",
     "string-replace-async": "^3.0.2",
     "tailwind-merge": "^2.2.2",
     "tailwindcss-animate": "^1.0.7",

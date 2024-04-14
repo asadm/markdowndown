@@ -74,6 +74,7 @@ export function Homepage() {
   const [isLoading, setIsLoading] = useState(false);
   const [gptEnabled, setGptEnabled] = useState(false);
   const [applyGpt, setApplyGpt] = useState("");
+  const [bigModel, setBigModel] = useState(false);
 
   const [md, setMd] = useState("");
 
@@ -84,7 +85,8 @@ export function Homepage() {
       downloadImages,
       imagesBasePathOverride,
       removeNonContent,
-      applyGpt
+      applyGpt,
+      bigModel
     }
     localStorage.setItem("settings", JSON.stringify(settings))
   }
@@ -97,6 +99,7 @@ export function Homepage() {
       setApplyGpt(parsed.applyGpt || "")
       if (parsed.applyGpt) setGptEnabled(true)
       setRemoveNonContent(!!parsed.removeNonContent)
+      setBigModel(!!parsed.bigModel)
       setImagesDir(parsed.imagesDir)
       setDownloadImages(!!parsed.downloadImages)
       SetImagesBasePathOverride(parsed.imagesBasePathOverride)
@@ -120,7 +123,8 @@ export function Homepage() {
       imagesDir,
       imagesBasePathOverride,
       removeNonContent,
-      applyGpt
+      applyGpt,
+      bigModel
     }
 
     setIsLoading(true)
@@ -255,6 +259,14 @@ export function Homepage() {
                   Apply custom instructions to further clean up or transform the markdown content using GPT-3.5
                 </HelpTooltip>
               </Label>
+              {gptEnabled && (
+                <div className="flex items-center space-x-2">
+                <Checkbox id="big-model" checked={bigModel} onClick={t=>setBigModel(!bigModel)} />
+                <label className="text-sm leading-none" htmlFor="big-model">
+                  Use GPT4 (takes longer)
+                </label>
+              </div>
+              )}
               {gptEnabled && <Textarea id="apply-gpt-txt" 
               className="min-h-[20rem]"
               placeholder={`Instructions for GPT like:\n\n'Add a tldr section at the top'\n'Remove all links'\n'Change all subheadings to h3'`} value={applyGpt} onChange={val=>{ 
