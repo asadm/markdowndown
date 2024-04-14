@@ -39,6 +39,14 @@ import {
 } from "@/components/ui/tooltip"
  import { track } from "./analytics"
 import { useEffect, useState } from "react"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 function getLastPartOfUrl(url){
   // remove params and hash and trailing slash
@@ -200,8 +208,12 @@ export function Homepage() {
           </div>
           
           <div className="space-y-2 flex flex-col gap-4">
-            <p>Advanced Options</p>
-            <div className="flex items-center space-x-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Options</CardTitle>
+              </CardHeader>
+              <CardContent>
+              <div className="flex items-center space-x-2">
               <Checkbox id="remove-noncontent" checked={removeNonContent} onClick={t=>setRemoveNonContent(!removeNonContent)} />
               <label className="text-sm leading-none" htmlFor="remove-noncontent">
                 Remove non-content elements 
@@ -220,7 +232,30 @@ export function Homepage() {
                 </HelpTooltip>
               </label>
             </div>
+            <div className="flex items-center space-x-2">
+            <Checkbox id="apply-gpt" checked={gptEnabled} onClick={t=>{
+              const newValue = !gptEnabled;
+              if (!newValue){
+                setApplyGpt("")
+              }
+              setGptEnabled(newValue);
+              }} />
+              <Label className="text-sm leading-none ml-2" htmlFor="apply-gpt">
+                Apply GPT Filter on Markdown
+                <HelpTooltip>
+                  Apply custom instructions to further clean up or transform the markdown content using GPT-3.5
+                </HelpTooltip>
+              </Label>
+            </div>
+              </CardContent>
+            </Card>
+            
             {downloadImages && (
+              <Card>
+              <CardHeader>
+                <CardTitle>Image Options</CardTitle>
+              </CardHeader>
+              <CardContent>
               <>
               <div className="space-y-2">
               <Label className="text-sm leading-none" htmlFor="images-folder">
@@ -246,36 +281,31 @@ export function Homepage() {
               }} />
               </div>
               </>
+              </CardContent>
+            </Card>
             )}
-
+ {gptEnabled && <Card>
+              <CardHeader>
+                <CardTitle>GPT Options</CardTitle>
+              </CardHeader>
+              <CardContent>
             <div className="space-y-2">
-            <Checkbox id="apply-gpt" checked={gptEnabled} onClick={t=>{
-              const newValue = !gptEnabled;
-              if (!newValue){
-                setApplyGpt("")
-              }
-              setGptEnabled(newValue);
-              }} />
-              <Label className="text-sm leading-none ml-2" htmlFor="apply-gpt">
-                Apply GPT Filter on Markdown
-                <HelpTooltip>
-                  Apply custom instructions to further clean up or transform the markdown content using GPT-3.5
-                </HelpTooltip>
-              </Label>
-              {gptEnabled && (
+            
+              
                 <div className="flex items-center space-x-2">
                 <Checkbox id="big-model" checked={bigModel} onClick={t=>setBigModel(!bigModel)} />
                 <label className="text-sm leading-none" htmlFor="big-model">
                   Use GPT4 (takes longer)
                 </label>
               </div>
-              )}
-              {gptEnabled && <Textarea id="apply-gpt-txt" 
+              <Textarea id="apply-gpt-txt" 
               className="min-h-[20rem]"
               placeholder={`Instructions for GPT like:\n\n'Add a tldr section at the top'\n'Remove all links'\n'Change all subheadings to h3'`} value={applyGpt} onChange={val=>{ 
                 setApplyGpt(val.target.value)
-              }} />}
+              }} />
             </div>
+            </CardContent>
+            </Card>}
             
           </div>
           
