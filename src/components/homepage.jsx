@@ -37,7 +37,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
- 
+ import { track } from "./analytics"
 import { useEffect, useState } from "react"
 
 function getLastPartOfUrl(url){
@@ -92,6 +92,7 @@ export function Homepage() {
   }
 
   useEffect(()=>{
+    track("Homepage Loaded")
     const settings = localStorage.getItem("settings");
     if (settings){
       const parsed = JSON.parse(settings);
@@ -126,6 +127,8 @@ export function Homepage() {
       applyGpt,
       bigModel
     }
+
+    track("Convert Clicked", payload)
 
     setIsLoading(true)
     const resp = await fetch("/api/tomd", {
