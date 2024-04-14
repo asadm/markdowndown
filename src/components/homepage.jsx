@@ -152,6 +152,7 @@ export function Homepage() {
         title: "Failed to Convert",
         description: "Either the URL is invalid or the server is too busy. Please try again later.",
       })
+      track("Download Failed", payload)
     }
     if (resp.ok && !downloadImages){
       const md = await resp.text();
@@ -165,6 +166,7 @@ export function Homepage() {
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
+      track("Downloaded Markdown", {withImages: false})
 
     } 
     else if (resp.ok && downloadImages){
@@ -180,6 +182,7 @@ export function Homepage() {
         title: "Download Started",
         description: "Your markdown and images are being downloaded as a zip file",
       })
+      track("Downloaded Markdown", {withImages: true})
     }
     saveSettingsToLocalStorage()
     setIsLoading(false)
