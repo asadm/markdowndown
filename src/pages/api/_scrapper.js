@@ -6,32 +6,40 @@ import { processMarkdownWithImages } from './_imgProcessor';
 import fs from 'fs';
 import { runGPT } from './_gpt';
 import Showdown from 'showdown';
-
+import puppeteer from 'puppeteer';
 const gptModel = 'gpt-3.5-turbo-0125';
 const gptModelBig = 'gpt-4-turbo-2024-04-09'
 const PUPPETEERREMOTEURL = `https://markdownworker.asadmemon.workers.dev/?url=`;
+const browserWSEndpoint = "https://chrome.browserless.io?token="+process.env.BROWSERLESS_KEY;
 
 // Define the function using ES6 arrow function syntax
+let browser;
 const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, imgDirName = "images", imagesBasePathOverride = undefined, removeNonContent = true, applyGpt="", bigModel = false) => {
   try {
     // Launch Puppeteer browser instance
     console.log('Launching Puppeteer browser instance...');
-    // const browser = await puppeteer.launch();
-    // const page = await browser.newPage();
+    if (!browser){
+      // browser = await puppeteer.launch();
+      browser = await puppeteer.connect({browserWSEndpoint});
+    }
+    const page = await browser.newPage();
 
     // // Navigate to the provided URL
-    // await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.goto(url, { waitUntil: 'networkidle0' });
 
     // // Get the page content
     // console.log('Fetching page content...');
-    // const data = await page.content();
+    const data = await page.content();
+
+    browser.close();
+    browser = null;
 
     // fetch from remote
-    const resp = await fetch(`${PUPPETEERREMOTEURL}${url}`);
-    if (!resp.ok){
-      throw new Error(`Failed to fetch ${url}`);
-    }
-    const data = await resp.text();
+    // const resp = await fetch(`${PUPPETEERREMOTEURL}${url}`);
+    // if (!resp.ok){
+    //   throw new Error(`Failed to fetch ${url}`);
+    // }
+    // const data = await resp.text();
     // Use JSDOM to parse the HTML content
     const doc = new JSDOM(data, { url });
 
@@ -69,6 +77,8 @@ const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, img
   } catch (error) {
     console.error(`Error fetching clean markdown from URL: ${error.message}`);
     throw error;
+    browser.close();
+    browser = null;
   }
 };
 
