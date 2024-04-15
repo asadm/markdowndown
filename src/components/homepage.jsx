@@ -316,7 +316,7 @@ export function Homepage() {
         <footer className="mt-10 text-xs text-gray-500 dark:text-gray-400">
           <p>
           © {new Date().getFullYear()}&nbsp;
-            <a className="underline" href="https://asadmemon.com" target="_blank" rel="noopener noreferrer">
+            <a className="underline" href="https://twitter.com/_asadmemon" target="_blank" rel="noopener noreferrer">
               Asad Memon
             </a>
           </p>
