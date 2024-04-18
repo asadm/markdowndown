@@ -7,6 +7,7 @@ import fs from 'fs';
 import { runGPT } from './_gpt';
 import Showdown from 'showdown';
 import puppeteer from 'puppeteer';
+import { wrapInStyledHtml } from './_htmlwrap';
 const gptModel = 'gpt-3.5-turbo-0125';
 const gptModelBig = 'gpt-4-turbo-2024-04-09'
 const PUPPETEERREMOTEURL = `https://markdownworker.asadmemon.workers.dev/?url=`;
@@ -73,7 +74,7 @@ const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, img
     // also save the markdown to html
     const converter = new Showdown.Converter();
     const html = converter.makeHtml(markdown);
-    fs.writeFileSync(filePath.replace(".md", ".html"), html, 'utf8');
+    fs.writeFileSync(filePath.replace(".md", ".html"), wrapInStyledHtml(html), 'utf8');
   } catch (error) {
     console.error(`Error fetching clean markdown from URL: ${error.message}`);
     throw error;
