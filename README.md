@@ -29,13 +29,15 @@ By default, this will spawn and use a local puppeteer instance to convert the we
 
 If you want to use Browserless, you can set the `BROWSERLESS_KEY` environment variable (in a `.env` or `.env.local` file) to your Browserless API key and it will use that instead.
 
-There is also a cloudflare worker (under `./cfworker` directory) that uses [Browser Rendering API](https://developers.cloudflare.com/browser-rendering/) instead of a puppeteer instance. If you deploy that, you can set the `HTMLFETCHAPI` environment variable to the URL of the cloudflare worker and it will use that instead.
+There is also a cloudflare worker (under `./cfworker` directory) that uses [Browser Rendering API](https://developers.cloudflare.com/browser-rendering/) instead of a puppeteer instance. If you deploy that, you can set the `HTMLFETCH_API` environment variable to the URL of the cloudflare worker and it will use that instead.
 
 ## 🤖 More Info on GPT Pass
 
 Current LLM models are not good at returning entire markdown file after processing it. So, we instruct the model to only return list of edits that it wants to make to the markdown file. I then apply these edits to the markdown file and return the final markdown file to the user. This works well in GPT3 and is actually quite great in GPT4. 
 
 See [_gpt.js](./src/pages/api/_gpt.js) to see how this is done.
+
+You need to set the `OPENAI_API_KEY` environment variable to your OpenAI API key to use this feature.
 
 ## License
 
