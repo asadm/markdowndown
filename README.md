@@ -26,3 +26,8 @@ By default, this will spawn and use a local puppeteer instance to convert the we
 If you want to use Browserless, you can set the `BROWSERLESS_KEY` environment variable (in a `.env` or `.env.local` file) to your Browserless API key and it will use that instead.
 
 There is also a cloudflare worker (under `./cfworker` directory) that uses [Browser Rendering API](https://developers.cloudflare.com/browser-rendering/) instead of a puppeteer instance. If you deploy that, you can set the `HTMLFETCHAPI` environment variable to the URL of the cloudflare worker and it will use that instead.
+
+
+## License
+
+Distributed under the MIT License. See `LICENSE` for more information.
