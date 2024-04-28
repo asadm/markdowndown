@@ -10,7 +10,7 @@
 - Convert webpage to markdown using [Puppeteer](https://pptr.dev/) and [Turndown](https://github.com/mixmark-io/turndown)
 - Clean up content using [Mozilla Readability](https://github.com/mozilla/readability)
 - Download images, embed them in markdown, and download as a zip
-- Transform final markdown using GPT3/4 step
+- Transform final markdown using GPT3/4 step (like summarization, removing links, changing formatting, etc.)
 
 ## 📦 Installation
 
