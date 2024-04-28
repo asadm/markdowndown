@@ -10,37 +10,47 @@ import puppeteer from 'puppeteer';
 import { wrapInStyledHtml } from './_htmlwrap';
 const gptModel = 'gpt-3.5-turbo-0125';
 const gptModelBig = 'gpt-4-turbo-2024-04-09'
-const PUPPETEERREMOTEURL = `https://markdownworker.asadmemon.workers.dev/?url=`;
-const browserWSEndpoint = "https://chrome.browserless.io?token="+process.env.BROWSERLESS_KEY;
+const browserFetchUrl = process.env.HTMLFETCHAPI?`${process.env.HTMLFETCHAPI}/?url=`:undefined;
+const browserWSEndpoint = process.env.BROWSERLESS_KEY? `https://chrome.browserless.io?token=${process.env.BROWSERLESS_KEY}`:undefined;
 
 // Define the function using ES6 arrow function syntax
 let browser;
 const fetchCleanMarkdownFromUrl = async (url, filePath, fetchImages = false, imgDirName = "images", imagesBasePathOverride = undefined, removeNonContent = true, applyGpt="", bigModel = false) => {
   try {
-    // Launch Puppeteer browser instance
-    console.log('Launching Puppeteer browser instance...');
-    if (!browser){
-      // browser = await puppeteer.launch();
-      browser = await puppeteer.connect({browserWSEndpoint});
+    let data;
+    if (browserFetchUrl){
+      // fetch from remote
+      console.log('Fetching from remote...');
+      const resp = await fetch(`${browserFetchUrl}${url}`);
+      if (!resp.ok){
+        throw new Error(`Failed to fetch ${url}`);
+      }
+      data = await resp.text();
     }
-    const page = await browser.newPage();
+    else{
+      console.log('Launching Puppeteer browser instance...');
+      if (!browser){
+        if (browserWSEndpoint){
+          browser = await puppeteer.connect({browserWSEndpoint});
+        }
+        else{
+          browser = await puppeteer.launch();
+        }
+      }
 
-    // // Navigate to the provided URL
-    await page.goto(url, { waitUntil: 'networkidle0' });
+      const page = await browser.newPage();
+      await page.goto(url, { waitUntil: 'networkidle0' });
 
-    // // Get the page content
-    // console.log('Fetching page content...');
-    const data = await page.content();
+      // Get the page content
+      console.log('Fetching page content...');
+      data = await page.content();
 
-    browser.close();
-    browser = null;
+      browser.close();
+      browser = null;
+    }
+    
 
-    // fetch from remote
-    // const resp = await fetch(`${PUPPETEERREMOTEURL}${url}`);
-    // if (!resp.ok){
-    //   throw new Error(`Failed to fetch ${url}`);
-    // }
-    // const data = await resp.text();
+    
     // Use JSDOM to parse the HTML content
     const doc = new JSDOM(data, { url });
 
