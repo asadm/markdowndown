@@ -35,7 +35,7 @@ There is also a cloudflare worker (under `./cfworker` directory) that uses [Brow
 
 Current LLM models are not good at returning entire markdown file after processing it. So, we instruct the model to only return list of edits that it wants to make to the markdown file. I then apply these edits to the markdown file and return the final markdown file to the user. This works well in GPT3 and is actually quite great in GPT4. 
 
-See [_gpt.js](./markdowndown/src/pages/api/_gpt.js) to see how this is done.
+See [_gpt.js](./src/pages/api/_gpt.js) to see how this is done.
 
 ## License
 
